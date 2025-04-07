@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Easy POS V2</string>
+    <string name="title_activity_main">Easy POS V2</string>
+    <string name="package_name">erwan.capacitor.easypos.app</string>
+    <string name="custom_url_scheme">erwan.capacitor.easypos.app</string>
+</resources>
