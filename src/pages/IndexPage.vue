@@ -8,7 +8,7 @@
         <div class="col-xs-12 col-sm-6 q-pa-sm">
           <q-select
             behavior="menu"
-            v-model="selectedProductCategoryId"
+            v-model="selectedProductCategory"
             :options="categories"
             :dense="true"
             label="Category"
@@ -124,7 +124,7 @@
     <!-- <div class="lt-sm col-12 q-pa-xs">
       <q-select
         behavior="menu"
-        v-model="selectedProductCategoryId"
+        v-model="selectedProductCategory"
         :options="categories"
         :dense="true"
         label="Category"
@@ -183,7 +183,7 @@
         class="q-pa-sm"
         style="width: 50%"
         behavior="menu"
-        v-model="selectedProductCategoryId"
+        v-model="selectedProductCategory"
         :options="categories"
         label="Category"
       />
@@ -304,12 +304,18 @@ const categories = ref<ProductCategory[]>([
 
 const activeCart = useCartStore();
 
-const selectedProductCategoryId = ref({ ...categories.value[0] });
+const selectedProductCategory = ref({ ...categories.value[0] });
 const searchText = ref('');
 
 const filteredProducts = computed(() => {
-  const cid = Number(selectedProductCategoryId.value.value);
-  return products.value.filter((p: Product) => p.category_id === cid || cid === 0);
+  const cid = Number(selectedProductCategory.value.value);
+  return products.value.filter((p: Product) => {
+    return (
+      (p.category_id === cid || cid === 0) &&
+      (searchText.value.length == 0 ||
+        p.name.toLowerCase().includes(searchText.value.toLowerCase()))
+    );
+  });
 });
 
 function mytweak(offset: number) {
@@ -330,6 +336,10 @@ function removeProduct(pid: number) {
 }
 
 function tab() {
-  alert('tab');
+  if (activeCart.items.length > 0) {
+    // insert cart in localstorage
+    // update "unpaid_bills" icon badge number
+    // call activeCart.reset()
+  }
 }
 </script>
