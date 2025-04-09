@@ -58,7 +58,7 @@
 
     <!-- Cart listing & actions -->
     <div class="col-xs-12 col-sm-4" style="background-color: lightgreen">
-      <q-scroll-area style="height: 42vh">
+      <q-scroll-area :style="tweakCartListScrollableHeight()">
         <q-list :dense="true" class="q-pt-xs">
           <q-item v-for="item in activeCart.items" :key="item.id" :dense="true">
             <q-item-section>
@@ -323,8 +323,12 @@ function mytweak(offset: number) {
 }
 
 function tweakProductScrollableHeight() {
-  const offset = $q.screen.lt.sm ? '550' : '100';
+  const offset = $q.screen.lt.sm ? '500' : '100';
   return { height: `calc(100vh - ${offset}px)` };
+}
+
+function tweakCartListScrollableHeight() {
+  return { height: $q.screen.lt.sm ? '25vh' : '42vh' };
 }
 
 function addProduct(p: Product) {

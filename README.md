@@ -2,6 +2,11 @@
 
 Point-Of-Sale App
 
+## Troubleshoot
+
+Had to specify sql.js dependency version to 1.11.0 for wasm compileStream to work
+https://forum.ionicframework.com/t/problem-capacitor-community-sqlite-with-jeep/247244/3
+
 ## TODO,DOING,DONE
 
 <!-- Cart Page -->

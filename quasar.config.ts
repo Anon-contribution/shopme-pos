@@ -93,6 +93,12 @@ export default defineConfig((ctx) => {
           { server: false },
         ],
       ],
+      // tweak for capacitor to work with web build
+      alias: {
+        '@capacitor/core': fileURLToPath(
+          new URL('./src-capacitor/node_modules/@capacitor/core', import.meta.url),
+        ),
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
