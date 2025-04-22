@@ -52,7 +52,7 @@
           <!-- Section Payment Method  -->
           <q-tabs v-model="tab">
             <q-tab name="cash" icon="attach_money" label="Cash" />
-            <q-tab name="qrcode" icon="qr_code" label="QRcode" />
+            <q-tab name="khqr" icon="qr_code" label="QRcode" />
             <q-tab name="card" icon="credit_card" label="Card" />
           </q-tabs>
         </q-card-section>
@@ -75,15 +75,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useCartStore } from 'stores/cart';
 import { useQuasar } from 'quasar';
-
+import { PaymentMode, PaymentType } from 'src/database/entity/Payment';
+import AppDataSource from 'src/database/data-sources/AppDataSource';
+import { Order, Payment } from 'src/database/entity';
 const $q = useQuasar();
 const activeCart = useCartStore();
 const dialog = ref(false);
 const tab = ref('cash');
 const chargeAmount = ref(0);
+const orderRepository = AppDataSource.getRepository(Order);
+
+const paymentMode = computed(() => {
+  if (tab.value == 'cash') return PaymentMode.CASH;
+  else if (tab.value == 'card') return PaymentMode.CARD;
+  else if (tab.value == 'khqr') return PaymentMode.KHQR;
+  else return PaymentMode.CASH;
+});
 
 function chargeAmountIsValid(): boolean {
   if (chargeAmount.value <= 0) {
@@ -96,16 +106,39 @@ function chargeAmountIsValid(): boolean {
   return true;
 }
 
-function savePayment() {
-  activeCart.addPayment({
-    type: 'cash',
-    amount: Number(chargeAmount.value),
-    in: Number(chargeAmount.value),
-    out: 0,
-  });
+/**
+ * When user save a payment, we update the order's products & payments in sqlite or create it
+ */
+async function savePayment() {
+  const p = new Payment();
+  p.amount = chargeAmount.value;
+  p.type = PaymentType.CHARGE;
+  p.mode = paymentMode.value;
 
+  if (activeCart.id != null) {
+    console.log('cart already exist in DB');
+    // save payment for order
+    const order = await orderRepository.findOne({ where: { id: activeCart.id } });
+    p.order = order!;
+    await AppDataSource.manager.save(p);
+    // sync products
+    // p.order.products = [];
+    // activeCart.products.forEach(prod => p.order.products.push(prod))
+    // AppDataSource.manager.save(p.order)
+  } else {
+    console.log('cart NOT exist in DB');
+    const order = new Order();
+    order.tab_payer = '';
+    order.payments = [];
+    order.products = [];
+    order.payments.push(p);
+    activeCart.products.forEach((prod) => order.products.push(prod));
+    const savedOrder = await orderRepository.save(order);
+    activeCart.id = savedOrder.id;
+  }
+
+  activeCart.addPayment(p);
   chargeAmount.value = Number(activeCart.totalDue);
-
   if (activeCart.totalDue <= 0) {
     activeCart.reset();
     dialog.value = false;

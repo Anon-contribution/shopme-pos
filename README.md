@@ -7,16 +7,16 @@ Point-Of-Sale App
 Had to specify sql.js dependency version to 1.11.0 for wasm compileStream to work
 https://forum.ionicframework.com/t/problem-capacitor-community-sqlite-with-jeep/247244/3
 
-## TODO,DOING,DONE
+## TODO
 
 <!-- Cart Page -->
 
 This is the main screen of the POS, it display the products on sale,
 and allow adding them to a cart for an immediate/later checkout(payment).
 
-- V1 Mobile Cart Page | DONE
-- V1 Tablet Cart Page | DONE
-- V1 Desktop Cart Page | DONE
+- UX improvement:
+  - disable checkout btn if no products in cart
+- UI improvement
 
 <!-- Check-out Page -->
 
@@ -25,18 +25,17 @@ full payments generate invoices.
 
 \*note: unpaid / partially paid bills are archived everyday at 5am and can be found in the 'Unpaid Bills' section of the POS
 
-- V1 Mobile Check-out Page | DOING
-- V1 Tablet Check-out Page | TODO
-- V1 Desktop Check-out Page | TODO
+- Payment Method display name instead of value
 
 <!-- unpaid Bills Page -->
 
 Page listing unpaid / partially paid bills categorized by day and sorted from most recent to oldest
 Here we can see the itemized bill and make payment through checkout page. Once bill is fully paid its moved from "unpaid bills" to "invoices"
 
-<!-- Invoices Page -->
-
-Listing page of fully paid bill, here we can fully or partially refund a bill.
+- display only unpaid
+- filter by date (default today) : "yesterday","today", "datepicker" buttons
+- make notif badge number update
+- UI improvement
 
 ## Install the dependencies
 

@@ -2,13 +2,11 @@ import {
   CapacitorSQLite,
   SQLiteConnection,
   type SQLiteDBConnection,
-  type capSQLiteUpgradeOptions,
 } from '@capacitor-community/sqlite';
 
 import { Capacitor } from '@capacitor/core';
 
 export interface ISQLiteService {
-  addUpgradeStatement(options: capSQLiteUpgradeOptions): Promise<void>;
   closeDatabase(dbName: string, readOnly: boolean): Promise<void>;
   getPlatform(): string;
   initWebStore(): Promise<void>;
@@ -41,19 +39,6 @@ class SQLiteService implements ISQLiteService {
   sqlitePlugin = CapacitorSQLite;
   sqliteConnection = new SQLiteConnection(CapacitorSQLite);
   dbNameVersionDict: Map<string, number> = new Map();
-
-  async addUpgradeStatement(options: capSQLiteUpgradeOptions): Promise<void> {
-    // add the upgrade statement to define the database schema
-    // depending on the database version
-    try {
-      await this.sqlitePlugin.addUpgradeStatement(options);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const msg = error.message ? error.message : error;
-      throw new Error(`sqliteService.addUpgradeStatement: ${msg}`);
-    }
-    return;
-  }
 
   async closeDatabase(dbName: string, readOnly: boolean): Promise<void> {
     // close the connection to the database and close the database
@@ -117,15 +102,8 @@ class SQLiteService implements ISQLiteService {
       const retCC = (await this.sqliteConnection.checkConnectionsConsistency()).result;
       const isConn = (await this.sqliteConnection.isConnection(dbName, readOnly)).result;
       if (retCC && isConn) {
-        console.log('retrieveConnection');
         db = await this.sqliteConnection.retrieveConnection(dbName, readOnly);
       } else {
-        console.log('createConnection:');
-        console.log('dbname:' + dbName);
-        console.log('encrypted:' + encrypted);
-        console.log('mode:' + mode);
-        console.log('loadToVersion:' + loadToVersion);
-        console.log('readonly:' + readOnly);
         db = await this.sqliteConnection.createConnection(
           dbName,
           encrypted,

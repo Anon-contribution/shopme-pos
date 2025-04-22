@@ -13,19 +13,23 @@
     "dev": "npm run copy:sql:wasm && quasar dev",
     "copy:sql:wasm": "copyfiles -u 3 node_modules/sql.js/dist/sql-wasm.wasm public/assets",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare && npx tsx ./src/database/scripts/modify-typeorm.js"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^7.0.0",
     "@capacitor/cli": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
+    "reflect-metadata": "^0.2.2",
+    "sql.js": "1.11.0",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.22",
     "vue": "^3.4.18",
     "vue-i18n": "^11.0.0",
-    "vue-router": "^4.0.12",
-    "sql.js": "1.11.0"
+    "vue-router": "^4.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
@@ -40,6 +44,7 @@
     "eslint-plugin-vue": "^9.30.0",
     "globals": "^15.12.0",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.5.3",
     "vite-plugin-checker": "^0.9.0",
     "vue-tsc": "^2.0.29"

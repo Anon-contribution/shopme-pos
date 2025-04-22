@@ -1,24 +1,27 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import type { Product } from '../types/Product';
-import type { Cart } from '../types/Cart';
-import type { Payment } from 'src/types/Payment';
+import type { Product } from '../database/entity/Product';
+import { type Payment } from '../database/entity/Payment';
+import type { Order } from 'src/database/entity/Order';
 
 export const useCartStore = defineStore('cart', {
-  state: (): Cart => ({
-    id: undefined,
-    items: [],
+  state: (): Order => ({
+    id: null,
+    external_id: null,
+    tab_payer: null,
+    products: [],
     payments: [],
+    created_at: null,
   }),
 
   getters: {
-    totalPrice(state: Cart) {
-      return state.items.reduce(
+    totalPrice(state: Order) {
+      return state.products.reduce(
         (sum: number, product: Product) => Number(sum) + Number(product.price),
         0,
       );
     },
-    totalPaid(state: Cart) {
-      const paid = state.payments.reduce((sum: number, payment: Payment) => {
+    totalPaid(state: Order) {
+      const paid = state.payments.reduce((sum, payment) => {
         return Number(sum) + Number(payment.amount);
       }, 0);
       return paid;
@@ -30,25 +33,27 @@ export const useCartStore = defineStore('cart', {
 
   actions: {
     reset() {
-      this.items.splice(0);
+      this.products.splice(0);
       this.payments.splice(0);
-      this.id = undefined;
+      this.id = null;
     },
     addItem(p: Product) {
       // If at least 1 payment exist, freeze bill update ?
-      this.items.push({ ...p });
+      this.products.push({ ...p });
     },
     removeItem(itemId: number) {
       // If at least 1 payment exist, freeze bill update ?
-      const found = this.items.findIndex((item: Product) => item.id == itemId);
+      const found = this.products.findIndex((item: Product) => item.id == itemId);
       if (found !== -1) {
-        this.items.splice(found, 1);
+        this.products.splice(found, 1);
       }
     },
     addPayment(p: Payment) {
       // generate temp txid
       // check for overpayment
-      this.payments.push({ ...p });
+      this.payments.push({
+        ...p,
+      });
     },
   },
 });
