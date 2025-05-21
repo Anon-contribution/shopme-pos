@@ -6,7 +6,9 @@
 
         <q-toolbar-title> ShopMe </q-toolbar-title>
         <q-btn flat dense round icon="receipt_long" aria-label="Unpaid Bill" to="/unpaid_bills">
-          <q-badge color="red" floating>4</q-badge>
+          <q-badge color="red" floating v-if="unpaidBill.counter > 0">{{
+            unpaidBill.counter
+          }}</q-badge>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -28,50 +30,38 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useUnpaidBillStore } from 'stores/unpaidBillCounter';
+// import AppDataSource from 'src/database/data-sources/AppDataSource';
+// import { Order } from 'src/database/entity';
+
+const unpaidBill = useUnpaidBillStore();
+
+// const unpaidOrders = await AppDataSource.getRepository(Order)
+//   .createQueryBuilder('order')
+//   .leftJoinAndSelect('order.payments', 'payment')
+//   .leftJoin('order.products', 'product')
+//   .groupBy('order.id')
+//   .having('COALESCE(SUM(payment.amount), 0) < COALESCE(SUM(product.price), 0)')
+//   .getMany();
+
+// unpaidBill.set(unpaidOrders.length);
 
 const linksList: EssentialLinkProps[] = [
+  // Internal route
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
+    title: 'POS',
+    caption: 'pos',
+    icon: 'fax',
+    link: '',
+    route: '/',
   },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
+  // External link
+  // {
+  //   title: 'Quasar Awesome',
+  //   caption: 'Community Quasar projects',
+  //   icon: 'favorite',
+  //   link: 'https://awesome.quasar.dev',
+  // },
 ];
 
 const leftDrawerOpen = ref(false);

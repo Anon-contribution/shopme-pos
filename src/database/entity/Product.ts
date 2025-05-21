@@ -1,6 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  // ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { Category } from './Category';
-import { Order } from './Order';
+// import { Order } from './Order';
+import { OrderToProduct } from './OrderToProduct';
 
 @Entity()
 export class Product {
@@ -16,10 +25,12 @@ export class Product {
   @Column('integer')
   price: number;
 
-  @ManyToOne('Category', (category: Category) => category.products, { cascade: ['insert'] })
+  @ManyToOne('Category', (category: Category) => category.products, { cascade: true })
   @JoinColumn()
   category: Category;
 
-  @ManyToMany(() => Order, (order) => order.products)
-  orders: Order[];
+  // @ManyToMany(() => Order, (order) => order.products, { cascade: true })
+  // orders: Order[];
+  @OneToMany(() => OrderToProduct, (orderToProduct) => orderToProduct.product)
+  public orderToProducts: OrderToProduct[];
 }

@@ -2,51 +2,56 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import type { Product } from '../database/entity/Product';
 import { type Payment } from '../database/entity/Payment';
 import type { Order } from 'src/database/entity/Order';
+import { orderTotalPaid, orderTotalPrice } from 'src/utils';
+import { OrderToProduct } from 'src/database/entity';
 
 export const useCartStore = defineStore('cart', {
   state: (): Order => ({
     id: null,
     external_id: null,
     tab_payer: null,
-    products: [],
+    // products: [],
+    orderToProducts: [],
     payments: [],
     created_at: null,
   }),
 
   getters: {
     totalPrice(state: Order) {
-      return state.products.reduce(
-        (sum: number, product: Product) => Number(sum) + Number(product.price),
-        0,
-      );
+      return orderTotalPrice(state);
     },
     totalPaid(state: Order) {
-      const paid = state.payments.reduce((sum, payment) => {
-        return Number(sum) + Number(payment.amount);
-      }, 0);
-      return paid;
+      return orderTotalPaid(state);
     },
     totalDue(): number {
-      return this.totalPrice - this.totalPaid;
+      return 0;
+      // return this.totalPrice - this.totalPaid;
     },
   },
 
   actions: {
     reset() {
-      this.products.splice(0);
+      // this.products.splice(0);
       this.payments.splice(0);
       this.id = null;
     },
     addItem(p: Product) {
+      console.log(p);
+      const indexFound = this.orderToProducts.findIndex((otp) => otp.productId == p.id);
+      if (!indexFound) {
+        const otp = new OrderToProduct();
+        this.orderToProducts.push(otp);
+      }
       // If at least 1 payment exist, freeze bill update ?
-      this.products.push({ ...p });
+      // this.products.push({ ...p });
     },
     removeItem(itemId: number) {
+      console.log(itemId);
       // If at least 1 payment exist, freeze bill update ?
-      const found = this.products.findIndex((item: Product) => item.id == itemId);
-      if (found !== -1) {
-        this.products.splice(found, 1);
-      }
+      // const found = this.products.findIndex((item: Product) => item.id == itemId);
+      // if (found !== -1) {
+      //   this.products.splice(found, 1);
+      // }
     },
     addPayment(p: Payment) {
       // generate temp txid

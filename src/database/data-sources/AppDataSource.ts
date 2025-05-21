@@ -7,6 +7,7 @@ import { Category } from '../entity/Category';
 import { Order } from '../entity/Order';
 import { Payment } from '../entity/Payment';
 import { Product } from '../entity/Product';
+import { OrderToProduct } from './../entity/OrderToProduct';
 
 export const DBName = 'shopmeDB';
 
@@ -17,7 +18,7 @@ const AppDataSource = new DataSource({
   driver: connection,
   database: DBName,
   mode: 'no-encryption',
-  entities: [Category, Order, Payment, Product],
+  entities: [Category, Order, Payment, Product, OrderToProduct],
   migrations: [Initial1744870604544],
   logging: ['error', 'query', 'schema'],
   synchronize: false,

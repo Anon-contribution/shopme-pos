@@ -32,7 +32,7 @@ full payments generate invoices.
 Page listing unpaid / partially paid bills categorized by day and sorted from most recent to oldest
 Here we can see the itemized bill and make payment through checkout page. Once bill is fully paid its moved from "unpaid bills" to "invoices"
 
-- display only unpaid
+- display only unpaid | TO TEST
 - filter by date (default today) : "yesterday","today", "datepicker" buttons
 - make notif badge number update
 - UI improvement

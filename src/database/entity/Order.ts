@@ -2,14 +2,15 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
+  // ManyToMany,
   OneToMany,
-  JoinTable,
+  // JoinTable,
   Index,
   CreateDateColumn,
 } from 'typeorm';
-import { Product } from './Product';
+// import { Product } from './Product';
 import { Payment } from './Payment';
+import { OrderToProduct } from './OrderToProduct';
 
 @Entity()
 export class Order {
@@ -22,12 +23,15 @@ export class Order {
   @Column('varchar', { nullable: true })
   tab_payer: string | null;
 
-  @ManyToMany(() => Product, (product) => product.orders, {
-    cascade: true,
-    eager: true,
-  })
-  @JoinTable()
-  products: Product[];
+  // @ManyToMany(() => Product, (product) => product.orders, {
+  //   eager: true,
+  //   // cascade: true,
+  // })
+  // @JoinTable()
+  // products: Product[];
+
+  @OneToMany(() => OrderToProduct, (orderToProduct) => orderToProduct.order)
+  public orderToProducts: OrderToProduct[];
 
   @OneToMany(() => Payment, (payment) => payment.order, { eager: true, cascade: true })
   payments: Payment[];
@@ -35,4 +39,6 @@ export class Order {
   @Index()
   @CreateDateColumn()
   created_at: Date | null;
+
+  duplicatedProducts?: unknown[];
 }

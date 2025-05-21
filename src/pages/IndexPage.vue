@@ -24,6 +24,7 @@
           </q-input>
         </div>
       </div>
+      {{ activeCart.orderToProducts }}
       <!-- Product Listing -->
       <q-scroll-area :style="tweakProductScrollableHeight()">
         <!-- Mobile Component -->
@@ -62,7 +63,7 @@
     <div class="col-xs-12 col-sm-4" style="background-color: lightgreen">
       <q-scroll-area :style="tweakCartListScrollableHeight()">
         <q-list :dense="true" class="q-pt-xs">
-          <q-item v-for="item in activeCart.products" :key="item.id" :dense="true">
+          <!-- <q-item v-for="item in activeCart.products" :key="item.id" :dense="true">
             <q-item-section>
               <q-item-label caption lines="2">{{ item.label }} </q-item-label>
             </q-item-section>
@@ -80,7 +81,7 @@
             <q-item-section side>
               <q-item-label caption>${{ item.price }}</q-item-label>
             </q-item-section>
-          </q-item>
+          </q-item> -->
         </q-list>
       </q-scroll-area>
 
@@ -114,12 +115,12 @@
 
       <div class="row items-center justify-center">
         <CheckoutDialog></CheckoutDialog>
-        <q-btn
+        <!-- <q-btn
           label="Tab"
           color="secondary"
           @click="tab"
           :disable="activeCart.products.length == 0"
-        />
+        /> -->
       </div>
     </div>
   </q-page>
@@ -134,9 +135,11 @@ import { useQuasar } from 'quasar';
 import AppDataSource from 'src/database/data-sources/AppDataSource';
 import { Product } from 'src/database/entity/Product';
 import { Category } from 'src/database/entity/Category';
-import { Order } from 'src/database/entity';
+// import { Order } from 'src/database/entity';
+// import { useUnpaidBillStore } from 'src/stores/unpaidBillCounter';
 
 const $q = useQuasar();
+// const unpaidBill = useUnpaidBillStore();
 
 const products = ref<Product[]>([]);
 
@@ -149,7 +152,7 @@ const categories = ref<Category[]>([
 ]);
 const categoryRepository = AppDataSource.getRepository(Category);
 const productRepository = AppDataSource.getRepository(Product);
-const orderRepository = AppDataSource.getRepository(Order);
+// const orderRepository = AppDataSource.getRepository(Order);
 
 /** [DEV] SEED Categories & Products */
 
@@ -189,6 +192,8 @@ prods.forEach((p) => {
 
 const activeCart = useCartStore();
 
+console.log(activeCart.orderToProducts);
+
 const selectedProductCategory = ref({ ...categories.value[0] });
 const searchText = ref('');
 
@@ -220,42 +225,48 @@ function addProduct(p: Product) {
   activeCart.addItem(p);
 }
 
-function removeProduct(pid: number) {
-  activeCart.removeItem(pid);
-}
+// function removeProduct(pid: number) {
+//   activeCart.removeItem(pid);
+// }
 
-async function tab() {
-  try {
-    // if order already saved locally
-    if (activeCart.id != null) {
-      // sync products with activeCart & reset activeCart
-      console.log('already exist');
-      const activeOrder = await orderRepository.findOneOrFail({
-        where: { id: activeCart.id },
-        loadEagerRelations: true,
-      });
-      // if there's a difference between activeCart.products & activeOrder.products, sync activeOrder.products before save
-      // activeOrder.products = [];
-      // activeCart.products.forEach((p) => activeOrder.products.push({ ...p }));
-      await orderRepository.save(activeOrder);
-      activeCart.reset();
-    } else {
-      // save order locally & reset active cart
-      // /!\ To save relationships We need to use repository not manager
-      const orderRepository = AppDataSource.getRepository(Order);
-      const tabOrder = new Order();
+// async function tab() {
+//   try {
+//     // if order already saved locally
+//     if (activeCart.id != null) {
+//       console.log('Updating Tab');
+//       // sync products with activeCart & reset activeCart
+//       const activeOrder = await orderRepository.findOneOrFail({
+//         where: { id: activeCart.id },
+//         loadEagerRelations: true,
+//       });
+//       // activeOrder.products.splice(0);
+//       // activeCart.products.forEach((p) => activeOrder.products.push({ ...p }));
 
-      tabOrder.products = [];
-      tabOrder.payments = [];
-      activeCart.products.forEach((p) => tabOrder.products.push({ ...p }));
-      tabOrder.tab_payer = '';
+//       // console.log('activeOrder.products updated');
+//       // console.log(activeOrder.products);
 
-      await orderRepository.save(tabOrder);
-      activeCart.reset();
-    }
-  } catch (error) {
-    console.log('error saving order');
-    console.log(error);
-  }
-}
+//       const updatedOrder = await AppDataSource.manager.save(activeOrder);
+//       //const updatedOrder = await orderRepository.save(activeOrder);
+//       console.log('updatedOrder');
+//       console.log(updatedOrder);
+//       activeCart.reset();
+//     } else {
+//       console.log('Creating Tab');
+//       // save order locally & reset active cart
+//       const tabOrder = new Order();
+//       tabOrder.tab_payer = '';
+//       // tabOrder.products = [];
+//       tabOrder.payments = [];
+
+//       // activeCart.products.forEach((p) => tabOrder.products.push({ ...p }));
+//       await orderRepository.save(tabOrder);
+
+//       activeCart.reset();
+//       unpaidBill.increment();
+//     }
+//   } catch (error) {
+//     console.log('error saving order');
+//     console.log(error);
+//   }
+// }
 </script>

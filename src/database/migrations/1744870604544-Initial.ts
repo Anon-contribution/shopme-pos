@@ -182,8 +182,15 @@ export class Initial1744870604544 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'order_products_product',
+        name: 'order_to_product',
         columns: [
+          {
+            name: 'id',
+            type: 'integer',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
           {
             type: 'integer',
             name: 'productId',
@@ -191,6 +198,10 @@ export class Initial1744870604544 implements MigrationInterface {
           {
             type: 'integer',
             name: 'orderId',
+          },
+          {
+            type: 'integer',
+            name: 'quantity',
           },
         ],
         foreignKeys: [

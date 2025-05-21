@@ -32,6 +32,6 @@ export class Payment {
   @Column('datetime', { default: +new Date() })
   created_at: Date;
 
-  @ManyToOne(() => Order, (order) => order.payments)
+  @ManyToOne(() => Order, (order) => order.payments /*, { cascade: true }*/)
   order: Order;
 }

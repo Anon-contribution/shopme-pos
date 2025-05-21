@@ -81,6 +81,9 @@ import { useQuasar } from 'quasar';
 import { PaymentMode, PaymentType } from 'src/database/entity/Payment';
 import AppDataSource from 'src/database/data-sources/AppDataSource';
 import { Order, Payment } from 'src/database/entity';
+import { useUnpaidBillStore } from 'src/stores/unpaidBillCounter';
+
+const unpaidBill = useUnpaidBillStore();
 const $q = useQuasar();
 const activeCart = useCartStore();
 const dialog = ref(false);
@@ -118,9 +121,11 @@ async function savePayment() {
   if (activeCart.id != null) {
     console.log('cart already exist in DB');
     // save payment for order
-    const order = await orderRepository.findOne({ where: { id: activeCart.id } });
-    p.order = order!;
-    await AppDataSource.manager.save(p);
+    const order = await orderRepository.findOneOrFail({ where: { id: activeCart.id } });
+    order.payments.push(p);
+    await orderRepository.save(order);
+    // p.order = order;
+    // await AppDataSource.getRepository(Payment).save(p);
     // sync products
     // p.order.products = [];
     // activeCart.products.forEach(prod => p.order.products.push(prod))
@@ -130,9 +135,9 @@ async function savePayment() {
     const order = new Order();
     order.tab_payer = '';
     order.payments = [];
-    order.products = [];
+    // order.products = [];
     order.payments.push(p);
-    activeCart.products.forEach((prod) => order.products.push(prod));
+    // activeCart.products.forEach((prod) => order.products.push(prod));
     const savedOrder = await orderRepository.save(order);
     activeCart.id = savedOrder.id;
   }
@@ -142,6 +147,8 @@ async function savePayment() {
   if (activeCart.totalDue <= 0) {
     activeCart.reset();
     dialog.value = false;
+    // update "unpaid bill" button badge count (state ?)
+    unpaidBill.decrement();
   }
 }
 </script>
